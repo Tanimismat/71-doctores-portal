@@ -3,6 +3,8 @@ import PrimaryButton from './Shared/PrimaryButton';
 import doctor from '../assets/images/doctor.png'
 
 const Appointment = () => {
+
+
     return (
         <section className='flex justify-center items-center'>
             <div>
