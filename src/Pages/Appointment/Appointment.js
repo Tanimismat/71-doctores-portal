@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 import 'react-day-picker/dist/style.css';
 import AppointmentBanner from './AppointmentBanner';
 import AvailableAppointment from './AvailableAppointment';
