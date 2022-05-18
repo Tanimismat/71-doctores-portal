@@ -1,9 +1,9 @@
 import React from 'react';
-import { useSignInWithGoogle } from 'react-firebase-hooks/auth';
+import { useSignInWithGoogle, useUpdateProfile } from 'react-firebase-hooks/auth';
 import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import auth from '../firebase.init';
 import { useForm } from "react-hook-form";
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const Login = () => {
 
@@ -11,24 +11,35 @@ const Login = () => {
 
     const [signInWithEmailAndPassword, user, loading, error] = useSignInWithEmailAndPassword(auth);
 
+    const [updateProfile, updating, updatingError] = useUpdateProfile(auth);
+
     const { register, formState: { errors }, handleSubmit } = useForm();
 
-    if (loading || gLoading) {
-        return <button class="btn loading">loading</button>
+    const navigate = useNavigate();
+
+    const location = useLocation()
+
+    let from = location.state?.from?.pathname || "/";
+
+    if (loading || gLoading || updating) {
+        return <button className="btn loading">loading</button>
     }
 
     let signInError;
-    if (error || gError) {
+    if (error || gError || updatingError) {
         signInError = <p>{error?.message || gError?.message}</p>
     }
 
     if (user || gUser) {
         console.log(user || gUser)
+        navigate(from, { replace: true });
     }
 
-    const onSubmit = data => {
+    const onSubmit = async data => {
         console.log(data)
-        signInWithEmailAndPassword(data.email, data.password)
+        await signInWithEmailAndPassword(data.email, data.password)
+        await updateProfile({ displayName: data.name });
+        navigate('/appointment')
     };
 
     return (
