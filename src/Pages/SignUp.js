@@ -1,20 +1,18 @@
 import React from 'react';
-import { useSignInWithGoogle } from 'react-firebase-hooks/auth';
-import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
+import { useCreateUserWithEmailAndPassword, useSignInWithGoogle } from 'react-firebase-hooks/auth';
 import auth from '../firebase.init';
 import { useForm } from "react-hook-form";
 import { Link } from 'react-router-dom';
 
-const Login = () => {
-
+const SignUp = () => {
     const [signInWithGoogle, gUser, gLoading, gError] = useSignInWithGoogle(auth);
 
-    const [signInWithEmailAndPassword, user, loading, error] = useSignInWithEmailAndPassword(auth);
+    const [createUserWithEmailAndPassword, user, loading, error] = useCreateUserWithEmailAndPassword(auth);
 
     const { register, formState: { errors }, handleSubmit } = useForm();
 
     if (loading || gLoading) {
-        return <button class="btn loading">loading</button>
+        return <button className="btn loading">loading</button>
     }
 
     let signInError;
@@ -28,22 +26,36 @@ const Login = () => {
 
     const onSubmit = data => {
         console.log(data)
-        signInWithEmailAndPassword(data.email, data.password)
+        createUserWithEmailAndPassword(data.email, data.password)
     };
-
     return (
         <div className='flex justify-center items-center h-screen'>
 
             <div className="card w-96 bg-base-100 shadow-xl">
                 <div className="card-body">
-                    <h2 className="text-center">Login</h2>
+                    <h2 className="text-center">Sign Up </h2>
 
                     <form onSubmit={handleSubmit(onSubmit)}>
 
+                        {/*-------- name field --------- */}
                         <div className="form-control w-full max-w-xs">
+
+                            <input type="name" {...register("name", {
+                                required: {
+                                    value: true,
+                                    message: 'Name is required'
+                                }
+                            })} placeholder="Name" className="input input-bordered w-full max-w-xs" />
+
                             <label className="label">
-                                <span className="label-text">Email</span>
+                                {errors.name?.type === 'required' && <span className="label-text-alt text-red-500">{errors.name.message}</span>}
                             </label>
+
+                        </div>
+
+                        {/* ---------email field------------ */}
+
+                        <div className="form-control w-full max-w-xs">
 
                             <input type="email" {...register("email", {
                                 required: {
@@ -65,10 +77,8 @@ const Login = () => {
 
                         </div>
 
+                        {/* ---------password field------------ */}
                         <div className="form-control w-full max-w-xs">
-                            <label className="label">
-                                <span className="label-text">Password</span>
-                            </label>
 
                             <input type="password" {...register("password", {
                                 required: {
@@ -88,7 +98,7 @@ const Login = () => {
 
                         </div>
                         {signInError}
-                        <input className='btn w-full max-w-xs' type="submit" value='Login' />
+                        <input className='btn w-full max-w-xs' type="submit" value='Sign Up' />
 
                     </form>
                     <p>New to doctors portal? <Link to='/signup'>Create new account</Link> </p>
@@ -100,4 +110,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default SignUp;
